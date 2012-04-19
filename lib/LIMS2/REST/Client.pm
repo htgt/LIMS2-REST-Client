@@ -1,4 +1,5 @@
 package LIMS2::REST::Client;
+# ABSTRACT: LIMS2 REST Client
 
 use strict;
 use warnings FATAL => 'all';
