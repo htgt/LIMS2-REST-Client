@@ -7,6 +7,7 @@ use warnings FATAL => 'all';
 use Moose;
 use MooseX::Types::URI qw( Uri );
 use LWP::UserAgent;
+use LWP::ConnCache;
 use HTTP::Request;
 use JSON qw( to_json from_json );
 use URI;
@@ -59,7 +60,7 @@ sub _build_ua {
     my $self = shift;
 
     # Set proxy
-    my $ua = LWP::UserAgent->new();
+    my $ua = LWP::UserAgent->new( conn_cache => LWP::ConnCache->new() );
     $ua->proxy( http => $self->proxy_url )
         if defined $self->proxy_url;
 
