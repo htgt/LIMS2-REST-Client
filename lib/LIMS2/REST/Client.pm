@@ -7,7 +7,6 @@ use warnings FATAL => 'all';
 use Moose;
 use MooseX::Types::URI qw( Uri );
 use LWP::UserAgent;
-use LWP::ConnCache;
 use HTTP::Request;
 use JSON qw( to_json from_json );
 use URI;
@@ -16,7 +15,7 @@ use namespace::autoclean;
 with qw( MooseX::SimpleConfig MooseX::Log::Log4perl );
 
 has '+configfile' => (
-    default => $ENV{LIMS2_REST_CLIENT_CONF}
+    default => $ENV{LIMS2_REST_CLIENT_CONFIG}
 );
 
 has api_url => (
@@ -60,7 +59,7 @@ sub _build_ua {
     my $self = shift;
 
     # Set proxy
-    my $ua = LWP::UserAgent->new( conn_cache => LWP::ConnCache->new() );
+    my $ua = LWP::UserAgent->new( keep_alive => 1 );
     $ua->proxy( http => $self->proxy_url )
         if defined $self->proxy_url;
 
