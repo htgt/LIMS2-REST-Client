@@ -10,6 +10,7 @@ use LWP::UserAgent;
 use HTTP::Request;
 use JSON qw( to_json from_json );
 use URI;
+use LIMS2::Client::Error;
 use namespace::autoclean;
 
 with qw( MooseX::SimpleConfig MooseX::Log::Log4perl );
@@ -126,27 +127,21 @@ sub _wrap_request {
     my $self = shift;
 
     my $request = HTTP::Request->new( @_ );
-    my $method  = $request->method;
-    my $uri     = $request->uri;
 
-    $self->log->debug( "$method request for $uri" );
+    $self->log->debug( $request->method . ' request for ' . $request->uri );    
     if ( $request->content ) {
-        $self->log->debug( "Request data: " . $request->content );
+        $self->log->trace( sub { "Request data: " . $request->content } );
     }
 
     my $response = $self->ua->request($request);
+
+    $self->log->debug( 'Response: ' . $response->status_line );
 
     if ( $response->is_success ) {
         return from_json( $response->content );
     }
 
-    my $err_msg = "$method $uri: " . $response->status_line;
-
-    if ( my $content = $response->content ) {
-        $err_msg .= "\n $content";
-    }
-
-    confess $err_msg;
+    LIMS2::Client::Error->throw( $response );
 }
 
 __PACKAGE__->meta->make_immutable;
