@@ -5,7 +5,7 @@ use warnings FATAL => 'all';
 
 use Moose;
 use MooseX::MarkAsMethods autoclean => 1;
-use Scaler::Util qw( blessed );
+use Scalar::Util qw( blessed );
 use HTTP::Status qw( :constants );
 
 with 'Throwable';
@@ -24,9 +24,9 @@ around BUILDARGS => sub {
     }
 
     return $class->$orig( @args );
-}
+};
 
-overload '""' => \&as_string;
+use overload '""' => \&as_string;
 
 sub as_string {
     my $self = shift;
@@ -50,7 +50,7 @@ sub conflict {
 }
 
 sub bad_request {
-    return shift->is_status( BAD_REQUEST );
+    return shift->is_status( HTTP_BAD_REQUEST );
 }
 
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );

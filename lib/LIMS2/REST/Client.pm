@@ -10,7 +10,7 @@ use LWP::UserAgent;
 use HTTP::Request;
 use JSON qw( to_json from_json );
 use URI;
-use LIMS2::Client::Error;
+use LIMS2::REST::Client::Error;
 use namespace::autoclean;
 
 with qw( MooseX::SimpleConfig MooseX::Log::Log4perl );
