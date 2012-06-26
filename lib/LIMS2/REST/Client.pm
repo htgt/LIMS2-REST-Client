@@ -1,4 +1,10 @@
 package LIMS2::REST::Client;
+## no critic(RequireUseStrict,RequireUseWarnings)
+{
+    $LIMS2::REST::Client::VERSION = '0.001';
+}
+## use critic
+
 # ABSTRACT: LIMS2 REST Client
 
 use strict;
