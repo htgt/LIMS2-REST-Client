@@ -77,58 +77,59 @@ sub _build_ua {
 =cut
 
 sub uri_for {
-    my $self = shift;
+    my ( $self, @args ) = @_;
 
     my $uri = $self->api_url->clone;
 
     my @path_segments = $uri->path_segments;
 
-    while ( @_ ) {
-        last if ref $_[0];
-        push @path_segments, shift @_;
+    while ( @args ) {
+        last if ref $args[0];
+        push @path_segments, shift @args;
     }
 
     $uri->path_segments( @path_segments );
 
-    if ( @_ ) {
-        $uri->query_form( shift @_ );
+    if ( @args ) {
+        $uri->query_form( shift @args);
     }
 
     return $uri;
 }
 
 sub GET {
-    my $self = shift;
+    my ( $self, @args ) = @_;
 
-    $self->_wrap_request( 'GET', $self->uri_for( @_ ), [ content_type => 'application/json' ] );
+    return $self->_wrap_request( 'GET', $self->uri_for( @args ), [ content_type => 'application/json' ] );
 }
 
 sub DELETE {
-    my $self = shift;
+    my ( $self, @args ) = @_;
 
-    $self->_wrap_request( 'DELETE', $self->uri_for( @_ ), [ content_type => 'application/json' ] );
+    return $self->_wrap_request( 'DELETE', $self->uri_for( @args ), [ content_type => 'application/json' ] );
 }
 
 sub POST {
-    my $self = shift;
-    my $data = pop;
+    my ( $self, @args ) = @_;
+    my $data = pop @args;
 
-    $self->_wrap_request( 'POST', $self->uri_for( @_ ), [ content_type => 'application/json' ], to_json( $data ) );
+    return $self->_wrap_request( 'POST', $self->uri_for( @args ), [ content_type => 'application/json' ], to_json( $data ) );
 }
 
 sub PUT {
-    my $self = shift;
-    my $data = pop;
+    my ( $self, @args ) = @_;
+    my $data = pop @args;
 
-    $self->_wrap_request( 'PUT', $self->uri_for( @_ ), [ content_type => 'application/json' ], to_json( $data ) );
+    return $self->_wrap_request( 'PUT', $self->uri_for( @args ), [ content_type => 'application/json' ], to_json( $data ) );
 }
 
+## no critic(RequireFinalReturn)
 sub _wrap_request {
-    my $self = shift;
+    my ( $self, @args ) = @_;
 
-    my $request = HTTP::Request->new( @_ );
+    my $request = HTTP::Request->new( @args );
 
-    $self->log->debug( $request->method . ' request for ' . $request->uri );    
+    $self->log->debug( $request->method . ' request for ' . $request->uri );
     if ( $request->content ) {
         $self->log->trace( sub { "Request data: " . $request->content } );
     }
@@ -141,8 +142,9 @@ sub _wrap_request {
         return from_json( $response->content );
     }
 
-    LIMS2::Client::Error->throw( $response );
+    LIMS2::REST::Client::Error->throw( $response );
 }
+## use critic
 
 __PACKAGE__->meta->make_immutable;
 

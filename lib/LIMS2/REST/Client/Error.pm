@@ -1,4 +1,4 @@
-package LIMS2::Client::Error;
+package LIMS2::REST::Client::Error;
 
 use strict;
 use warnings FATAL => 'all';
@@ -16,7 +16,7 @@ with 'Throwable';
 has response => (
     is      => 'ro',
     isa     => 'HTTP::Response',
-    handles => [ qw( message ) ]        
+    handles => [ qw( message ) ]
 );
 
 around BUILDARGS => sub {

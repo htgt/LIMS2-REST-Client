@@ -8,15 +8,28 @@ use FindBin;
 use Const::Fast;
 use Log::Log4perl qw( :levels );
 use Data::Dump qw( dd );
+use File::Temp;
 
 Log::Log4perl->easy_init( $DEBUG );
 
 const my $API_URL => 'http://t87-dev.internal.sanger.ac.uk:9876/api';
 
+my $configfile = File::Temp->new( SUFFIX => '.conf' );
+
+$configfile->print(<<"EOT");
+api_url  = $API_URL
+realm    = LIMS2 API
+username = test_user\@example.org
+password = ahdooS1e
+timeout  = 300
+EOT
+
+$configfile->close;
+    
 use_ok 'LIMS2::REST::Client';
 
 ok my $c = LIMS2::REST::Client->new_with_config(
-    configfile => $FindBin::Bin . '/../lims2_rest_client.conf'
+    configfile => $configfile->filename
 ), 'construct LIMS2::REST::Client';
 
 isa_ok $c, 'LIMS2::REST::Client';
