@@ -7,6 +7,9 @@ use Moose;
 use MooseX::MarkAsMethods autoclean => 1;
 use Scalar::Util qw( blessed );
 use HTTP::Status qw( :constants );
+use Data::Dump   qw( pp );
+use JSON         qw( decode_json );
+use Try::Tiny;
 
 with 'Throwable';
 
@@ -30,7 +33,21 @@ use overload '""' => \&as_string;
 
 sub as_string {
     my $self = shift;
-    return $self->message;
+
+    my $str = $self->message . "\n";
+
+    my $content = $self->response->content;
+    if ( $content ) {
+        try {
+            my $data = decode_json( $content );
+            $str .= pp $data;
+        }
+        catch {
+            $str .= $content;
+        }
+    }
+
+    return $str;
 }
 
 # XXX Do we need these? Do we need others?
