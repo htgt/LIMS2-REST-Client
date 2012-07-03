@@ -139,7 +139,7 @@ sub _wrap_request {
     $self->log->debug( 'Response: ' . $response->status_line );
 
     if ( $response->is_success ) {
-        my $content = $response->content;        
+        my $content = $response->content;
         if ( defined $content and length $content ) {
             return decode_json( $content );
         }
