@@ -17,7 +17,6 @@ my %WriteMakefileArgs = (
     "File::Find" => 0,
     "File::Temp" => 0,
     "FindBin" => 0,
-    "Log::Log4perl" => 0,
     "Test::More" => "0.88",
     "Test::Most" => 0
   },
@@ -25,16 +24,21 @@ my %WriteMakefileArgs = (
     "ExtUtils::MakeMaker" => "6.30"
   },
   "DISTNAME" => "LIMS2-REST-Client",
-  "EXE_FILES" => [],
+  "EXE_FILES" => [
+    "bin/lims2-rest-client"
+  ],
   "LICENSE" => "perl",
   "NAME" => "LIMS2::REST::Client",
   "PREREQ_PM" => {
     "Data::Dump" => 0,
+    "Getopt::Long" => 0,
     "HTTP::Request" => 0,
     "HTTP::Status" => 0,
     "JSON" => 0,
     "LWP::UserAgent" => 0,
+    "Log::Log4perl" => 0,
     "Moose" => 0,
+    "MooseX::Getopt" => 0,
     "MooseX::Log::Log4perl" => 0,
     "MooseX::MarkAsMethods" => 0,
     "MooseX::SimpleConfig" => 0,
@@ -48,7 +52,7 @@ my %WriteMakefileArgs = (
     "strict" => 0,
     "warnings" => 0
   },
-  "VERSION" => "0.001",
+  "VERSION" => "0.002",
   "test" => {
     "TESTS" => "t/*.t"
   }

@@ -1,0 +1,55 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings FATAL => 'all';
+
+use LIMS2::REST::Client;
+use Getopt::Long;
+use Log::Log4perl qw( :easy );
+use Data::Dump qw( dd );
+
+sub eval_str {
+    my $str = shift;
+
+    ## no critic(ProhibitStringyEval)
+    my $res = eval $str;
+    die $@ if $@;
+    ## use critic
+
+    return $res;
+}
+
+Getopt::Long::Configure( 'pass_through' );
+
+my $action = 'GET';
+my $log_level = $WARN;
+my ( $params, $body );
+
+GetOptions(
+    'trace'    => sub { $log_level = $TRACE },
+    'debug'    => sub { $log_level = $DEBUG },
+    'verbose'  => sub { $log_level = $INFO },
+    'create'   => sub { $action = 'POST' },
+    'retrieve' => sub { $action = 'GET' },
+    'update'   => sub { $action = 'PUT' },
+    'delete'   => sub { $action = 'DELETE' },
+    'params=s' => sub { $params = eval_str( $_[1] ) },
+    'body=s'   => sub { $body   = eval_str( $_[1] ) },
+    'path=s@'  => \my @path_parts
+) or die "Usage: $0 [OPTIONS]\n";
+
+Getopt::Long::Configure( 'default' );
+
+Log::Log4perl->easy_init( { level => $log_level, layout => '%m%n' } );
+
+my $c = LIMS2::REST::Client->new_with_options;
+
+my $res = $c->$action( grep { defined } @path_parts, $params, $body );
+
+dd $res;
+
+
+
+
+
+

@@ -4,6 +4,7 @@ MANIFEST
 META.yml
 Makefile.PL
 README
+bin/lims2-rest-client
 lib/LIMS2/REST/Client.pm
 lib/LIMS2/REST/Client/Error.pm
 t/00-compile.t
