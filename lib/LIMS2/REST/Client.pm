@@ -8,12 +8,12 @@ use Moose;
 use MooseX::Types::URI qw( Uri );
 use LWP::UserAgent;
 use HTTP::Request;
-use JSON qw( to_json from_json );
+use JSON qw( encode_json decode_json );
 use URI;
 use LIMS2::REST::Client::Error;
 use namespace::autoclean;
 
-with qw( MooseX::SimpleConfig MooseX::Log::Log4perl );
+with qw( MooseX::SimpleConfig MooseX::Getopt MooseX::Log::Log4perl );
 
 has '+configfile' => (
     default => $ENV{LIMS2_REST_CLIENT_CONFIG}
@@ -113,14 +113,14 @@ sub POST {
     my ( $self, @args ) = @_;
     my $data = pop @args;
 
-    return $self->_wrap_request( 'POST', $self->uri_for( @args ), [ content_type => 'application/json' ], to_json( $data ) );
+    return $self->_wrap_request( 'POST', $self->uri_for( @args ), [ content_type => 'application/json' ], encode_json( $data ) );
 }
 
 sub PUT {
     my ( $self, @args ) = @_;
     my $data = pop @args;
 
-    return $self->_wrap_request( 'PUT', $self->uri_for( @args ), [ content_type => 'application/json' ], to_json( $data ) );
+    return $self->_wrap_request( 'PUT', $self->uri_for( @args ), [ content_type => 'application/json' ], encode_json( $data ) );
 }
 
 ## no critic(RequireFinalReturn)
@@ -139,7 +139,11 @@ sub _wrap_request {
     $self->log->debug( 'Response: ' . $response->status_line );
 
     if ( $response->is_success ) {
-        return from_json( $response->content );
+        my $content = $response->content;        
+        if ( defined $content and length $content ) {
+            return decode_json( $content );
+        }
+        return;
     }
 
     LIMS2::REST::Client::Error->throw( $response );
