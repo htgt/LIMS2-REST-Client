@@ -35,7 +35,7 @@ ok my $c = LIMS2::REST::Client->new_with_config(
 isa_ok $c, 'LIMS2::REST::Client';
 
 my $uri = $c->uri_for( 'designs', { gene => 'Cbx1' } );
-is $uri, "$API_URL/designs?gene=Cbx1",
+like $uri, qr{$API_URL/designs?.*gene=Cbx1.*},
     'uri_for designs for Cbx1';
 
 #lives_ok { my $data = $c->GET( 'designs', { gene => 'Cbx1' } ); dd $data } 'GET designs for Cbx1';

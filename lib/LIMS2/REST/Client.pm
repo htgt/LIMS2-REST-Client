@@ -64,11 +64,6 @@ sub _build_ua {
     $ua->proxy( http => $self->proxy_url )
         if defined $self->proxy_url;
 
-    # Set credentials
-    if ( $self->username ) {
-        $ua->credentials( $self->api_url->host_port, $self->realm, $self->username, $self->password );
-    }
-
     return $ua;
 }
 
@@ -90,9 +85,11 @@ sub uri_for {
 
     $uri->path_segments( @path_segments );
 
-    if ( @args ) {
-        $uri->query_form( shift @args);
-    }
+    # insert username and password into query parameters
+    $args[0]->{username} = $self->username;
+    $args[0]->{password} = $self->password;
+
+    $uri->query_form( shift @args );
 
     return $uri;
 }
