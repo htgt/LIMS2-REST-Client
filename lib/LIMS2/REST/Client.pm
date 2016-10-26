@@ -12,6 +12,8 @@ use JSON qw( encode_json decode_json );
 use URI;
 use LIMS2::REST::Client::Error;
 use namespace::autoclean;
+use YAML::Tiny;
+use Data::Serializer;
 
 with qw( MooseX::SimpleConfig MooseX::Getopt MooseX::Log::Log4perl );
 
@@ -26,13 +28,19 @@ has api_url => (
     required => 1
 );
 
-has username => (
+has access => (
     is       => 'ro',
     isa      => 'Str',
     required => 1
 );
 
-has password => (
+has secret => (
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1
+);
+
+has transport => (
     is       => 'ro',
     isa      => 'Str',
     required => 1
@@ -58,10 +66,11 @@ has ua => (
 
 sub _build_ua {
     my $self = shift;
-
+ 
     # Set proxy
     my $ua = LWP::UserAgent->new( keep_alive => 1 );
-    $ua->proxy( http => $self->proxy_url )
+    $ua->ssl_opts('SSL_ca_file');
+    $ua->proxy( https => $self->proxy_url )
         if defined $self->proxy_url;
 
     return $ua;
@@ -85,9 +94,7 @@ sub uri_for {
 
     $uri->path_segments( @path_segments );
 
-    # insert username and password into query parameters
-    $args[0]->{username} = $self->username;
-    $args[0]->{password} = $self->password;
+    $uri->secure;
 
     $uri->query_form( shift @args );
 
@@ -113,7 +120,7 @@ sub POST {
     return $self->_wrap_request( 'POST', $self->uri_for( @args ), [ content_type => 'application/json' ], encode_json( $data ) );
 }
 
-sub PUT {
+sub xs{
     my ( $self, @args ) = @_;
     my $data = pop @args;
 
@@ -126,11 +133,23 @@ sub _wrap_request {
 
     my $request = HTTP::Request->new( @args );
 
+    my $serial = Data::Serializer->new();
+    $serial = Data::Serializer->new(
+        serializer  => 'Storable',
+        digester    => 'SHA-256',
+        cipher      => 'Blowfish',
+        secret      => $self->transport,
+        compress    => 0,
+    );
+
+    my $frozen = $serial->freeze({ secret => $self->secret, access => $self->access });
+
+    $request->header( pass => $frozen );
+
     $self->log->debug( $request->method . ' request for ' . $request->uri );
     if ( $request->content ) {
         $self->log->trace( sub { "Request data: " . $request->content } );
     }
-
     my $response = $self->ua->request($request);
 
     $self->log->debug( 'Response: ' . $response->status_line );

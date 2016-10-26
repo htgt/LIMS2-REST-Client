@@ -19,13 +19,13 @@ my $configfile = File::Temp->new( SUFFIX => '.conf' );
 $configfile->print(<<"EOT");
 api_url  = $API_URL
 realm    = LIMS2 API
-username = test_user\@example.org
-password = ahdooS1e
+access   = 9E62ED9C-9B5F-11E6-BEF0-EC2AB02A2A21
+secret   = 9E62ED9C-9B5F-11E6-BEF0-EC2AB02A2A21
 timeout  = 300
 EOT
 
 $configfile->close;
-    
+
 use_ok 'LIMS2::REST::Client';
 
 ok my $c = LIMS2::REST::Client->new_with_config(
@@ -40,4 +40,4 @@ like $uri, qr{$API_URL/designs?.*gene=Cbx1.*},
 
 #lives_ok { my $data = $c->GET( 'designs', { gene => 'Cbx1' } ); dd $data } 'GET designs for Cbx1';
 
-done_testing;
+done_testin
