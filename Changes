@@ -1,5 +1,5 @@
 {{$NEXT}}
-
+    Switched to API keys
 0.003     2012-10-11 09:09:27 Europe/London
 
     No longer use HTTP Basic Auth

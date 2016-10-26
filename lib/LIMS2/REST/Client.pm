@@ -66,7 +66,7 @@ has ua => (
 
 sub _build_ua {
     my $self = shift;
- 
+
     # Set proxy
     my $ua = LWP::UserAgent->new( keep_alive => 1 );
     $ua->ssl_opts('SSL_ca_file');
