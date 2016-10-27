@@ -1,7 +1,7 @@
 package LIMS2::REST::Client::Error;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $LIMS2::REST::Client::Error::VERSION = '0.006';
+    $LIMS2::REST::Client::Error::VERSION = '0.007';
 }
 ## use critic
 

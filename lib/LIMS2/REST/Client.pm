@@ -1,7 +1,7 @@
 package LIMS2::REST::Client;
 ## no critic(RequireUseStrict,RequireUseWarnings)
 {
-    $LIMS2::REST::Client::VERSION = '0.006';
+    $LIMS2::REST::Client::VERSION = '0.007';
 }
 ## use critic
 
@@ -141,7 +141,7 @@ sub _wrap_request {
 
     my $serial = Data::Serializer->new();
     $serial = Data::Serializer->new(
-        serializer  => 'Storable',
+        serializer  => 'Data::Dumper',
         digester    => 'SHA-256',
         cipher      => 'Blowfish',
         secret      => $self->transport,
