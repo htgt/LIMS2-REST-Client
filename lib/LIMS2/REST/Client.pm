@@ -120,7 +120,7 @@ sub POST {
     return $self->_wrap_request( 'POST', $self->uri_for( @args ), [ content_type => 'application/json' ], encode_json( $data ) );
 }
 
-sub xs{
+sub PUT {
     my ( $self, @args ) = @_;
     my $data = pop @args;
 
